@@ -28,7 +28,7 @@ def spinning_donut():
                     z[o] = D
                     b[o] = ".,-~:;=!*#$@"[N if N > 0 else 0]
         print('\x1b[2J')
-        for k in range(1761):
+        for k in range(1760):
             print(b[k], end='')
             if k % 80 == 79:
                 print()
