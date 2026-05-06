@@ -79,9 +79,12 @@ class Plotter:
         plt.show()
 
     @staticmethod
-    def plot_fourier_transform(omega_values, fourier_values):
+    def plot_fourier_transform(omega_values, fourier_values, title="Analiza Transformaty Fouriera"):
         # Inicjalizacja figury z odpowiednim rozmiarem (szerokość, wysokość)
         plt.figure(figsize=(10, 8))
+
+        # Dodanie tytułu ogólnego dla całej figury
+        plt.suptitle(title, fontsize=24, fontweight='bold', y=0.98)
 
         # Wykres części rzeczywistej
         plt.subplot(3, 1, 1)
@@ -113,8 +116,8 @@ class Plotter:
     @staticmethod
     def plot_fourier_comparison(t_data, y_original, y_approx, omega=15):
         plt.figure(figsize=(10, 5))
-        plt.plot(t_data, y_original, 'r--', label='Oryginalny sygnał (Impuls)')
-        plt.plot(t_data, y_approx, 'b-', label=f'Przybliżenie (Odwrotny Fourier, $\Omega={omega}$)')
+        plt.plot(t_data, y_original, 'r-', linewidth=2, label='Oryginalny sygnał (Impuls)')
+        plt.plot(t_data, y_approx, 'b--', alpha=0.6, label=f'Przybliżenie (Odwrotny Fourier, $\Omega={omega}$)')
 
         plt.title("Porównanie sygnału oryginalnego z rekonstrukcją z widma")
         plt.xlabel("Czas (t)")

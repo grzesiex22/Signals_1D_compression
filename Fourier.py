@@ -11,6 +11,68 @@ class Fourier:
         self.t_vec = t_vec
         self.y_vec = y_vec
 
+    def transform(self, omega_limit=15, num_omega=500):
+        """
+        Oblicza widmo w zadanym zakresie.
+        Zwraca: (omega_vec, f_omega_vec)
+        """
+        omega_vec = np.linspace(-omega_limit, omega_limit, num_omega)
+        
+        # Wektoryzacja obliczeń
+        exponent = -1j * omega_vec[:, np.newaxis] * self.t_vec
+        integrand = self.y_vec * np.exp(exponent)
+        f_omega_vec = simpson(y=integrand, x=self.t_vec, axis=1)
+        
+        return omega_vec, f_omega_vec
+
+    def inverse_transform(self, omega_vec, f_omega_vec):
+        """
+        Odtwarza sygnał na podstawie podanego widma (f_omega_vec) 
+        i odpowiadających mu częstotliwości (omega_vec).
+        """
+        t = np.atleast_1d(self.t_vec)
+        # Tworzymy siatkę dla czasu i częstotliwości
+        T, O = np.meshgrid(t, omega_vec, indexing='ij')
+        
+        # Rozszerzamy widmo do wymiarów macierzy
+        F_matrix = np.tile(f_omega_vec, (len(t), 1))
+        integrand = F_matrix * np.exp(1j * O * T)
+        
+        # Całkowanie po omega (rekonstrukcja)
+        val = simpson(y=integrand, x=omega_vec, axis=1)
+        
+        # Wynik rzeczywisty skalowany przez 1/2pi
+        res = val.real / (2 * np.pi)
+        return res
+
+    @staticmethod
+    def trim_spectrum(omega_vec, f_omega_vec, k):
+        """
+        Przycina widmo do K najważniejszych współczynników (pod względem modułu).
+        Reszta zostaje wyzerowana.
+        """
+        # Obliczamy moduły
+        magnitudes = np.abs(f_omega_vec)
+        
+        # Znajdujemy indeksy K największych wartości
+        idx_to_keep = np.argsort(magnitudes)[-k:]
+        
+        # Tworzymy nowe widmo (same zera) i przywracamy tylko K wybranych wartości
+        f_trimmed = np.zeros_like(f_omega_vec, dtype=complex)
+        f_trimmed[idx_to_keep] = f_omega_vec[idx_to_keep]
+        
+        return f_trimmed
+    
+
+class Fourier2:
+    def __init__(self, t_vec, y_vec):
+        """
+        t_vec: wektor czasu (np. linspace)
+        y_vec: wartości sygnału dla tych punktów czasu
+        """
+        self.t_vec = t_vec
+        self.y_vec = y_vec
+
     def transform(self, omega):
         """
         Transformata prosta obliczana z tablicy danych.
@@ -47,4 +109,3 @@ class Fourier:
         
         res = val.real / (2 * np.pi)
         return res if len(res) > 1 else res[0]
-    
