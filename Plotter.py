@@ -78,6 +78,7 @@ class Plotter:
         plt.tight_layout()
         plt.show()
 
+    @staticmethod
     def plot_fourier_transform(omega_values, fourier_values):
         # Inicjalizacja figury z odpowiednim rozmiarem (szerokość, wysokość)
         plt.figure(figsize=(10, 8))
@@ -109,6 +110,7 @@ class Plotter:
         plt.tight_layout()
         plt.show()
 
+    @staticmethod
     def plot_fourier_comparison(t_data, y_original, y_approx, omega=15):
         plt.figure(figsize=(10, 5))
         plt.plot(t_data, y_original, 'r--', label='Oryginalny sygnał (Impuls)')
@@ -121,6 +123,7 @@ class Plotter:
         plt.legend()
         plt.show()
 
+    @staticmethod
     def plot_fourier_histogram(fourier_obj, omega_limit=10, num_prążków=21):
         """
         Rysuje histogram (wykres prążkowy) składowych cosinusowych i sinusowych.
