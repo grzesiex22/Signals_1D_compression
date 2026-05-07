@@ -6,7 +6,7 @@ class Plotter:
     @staticmethod
     def plot_single(signal_data, title="Sygnał", color='b'):
         """Rysuje pojedynczy sygnał."""
-        plt.figure(figsize=(10, 4))
+        plt.figure(figsize=(8, 3))
         plt.plot(signal_data.t, signal_data.y, color=color, linewidth=1.5)
         plt.title(title)
         plt.xlabel("Czas [s]")
@@ -19,7 +19,7 @@ class Plotter:
     def plot_category(signals, category_name, n=3):
         """Rysuje kilka (n) sygnałów z danej kategorii na jednym wykresie (jeden pod drugim)."""
         n = min(n, len(signals))
-        fig, axes = plt.subplots(n, 1, figsize=(10, 2.5 * n), sharex=True)
+        fig, axes = plt.subplots(n, 1, figsize=(8, 2 * n), sharex=True)
         
         if n == 1: axes = [axes] # Obsługa przypadku, gdy n=1
 
@@ -55,7 +55,7 @@ class Plotter:
             print("Błąd: Podane indeksy są poza zakresem danych.")
             return
 
-        fig, axes = plt.subplots(num_plots, 1, figsize=(10, 2.5 * num_plots), sharex=True)
+        fig, axes = plt.subplots(num_plots, 1, figsize=(8, 2 * num_plots), sharex=True)
         
         # Jeśli rysujemy tylko jeden sygnał, matplotlib nie zwraca listy osi
         if num_plots == 1:
@@ -81,47 +81,47 @@ class Plotter:
     @staticmethod
     def plot_fourier_transform(omega_values, fourier_values, title="Analiza Transformaty Fouriera"):
         # Inicjalizacja figury z odpowiednim rozmiarem (szerokość, wysokość)
-        plt.figure(figsize=(10, 8))
+        plt.figure(figsize=(8, 6.5))
 
         # Dodanie tytułu ogólnego dla całej figury
-        plt.suptitle(title, fontsize=24, fontweight='bold', y=0.98)
+        plt.suptitle(title, fontsize=16, fontweight='bold', y=0.98)
 
         # Wykres części rzeczywistej
         plt.subplot(3, 1, 1)
         plt.plot(omega_values, fourier_values.real, label=r"Re$\{\hat{f}(\omega)\}$", color='blue')
-        plt.title("Część rzeczywista transformaty Fouriera", fontsize=20)
-        plt.xlabel(r"$\omega$", fontsize=14)
-        plt.ylabel(r"Re$\{\hat{f}(\omega)\}$", fontsize=14)
+        plt.title("Część rzeczywista transformaty Fouriera", fontsize=14)
+        plt.xlabel(r"$\omega$", fontsize=12)
+        plt.ylabel(r"Re$\{\hat{f}(\omega)\}$", fontsize=12)
         plt.grid(True)
 
         # Wykres części urojonej
         plt.subplot(3, 1, 2)
         plt.plot(omega_values, fourier_values.imag, label=r"Im$\{\hat{f}(\omega)\}$", color='red')
-        plt.title("Część urojona transformaty Fouriera", fontsize=20)
-        plt.xlabel(r"$\omega$", fontsize=14)
-        plt.ylabel(r"Im$\{\hat{f}(\omega)\}$", fontsize=14)
+        plt.title("Część urojona transformaty Fouriera", fontsize=14)
+        plt.xlabel(r"$\omega$", fontsize=12)
+        plt.ylabel(r"Im$\{\hat{f}(\omega)\}$", fontsize=12)
         plt.grid(True)
 
         # Wykres modułu |F(ω)|
         plt.subplot(3, 1, 3)
         plt.plot(omega_values, np.abs(fourier_values), label=r"$|\hat{f}(\omega)|$", color='green')
-        plt.title("Moduł transformaty Fouriera", fontsize=20)
-        plt.xlabel(r"$\omega$", fontsize=14)
-        plt.ylabel(r"$|\hat{f}(\omega)|$", fontsize=14)
+        plt.title("Moduł transformaty Fouriera", fontsize=14)
+        plt.xlabel(r"$\omega$", fontsize=12)
+        plt.ylabel(r"$|\hat{f}(\omega)|$", fontsize=12)
         plt.grid(True)
 
         plt.tight_layout()
         plt.show()
 
     @staticmethod
-    def plot_fourier_comparison(t_data, y_original, y_approx, omega=15):
-        plt.figure(figsize=(10, 5))
+    def plot_fourier_comparison(t_data, y_original, y_approx, K, title="Porównanie sygnału oryginalnego z rekonstrukcją z widma"):
+        plt.figure(figsize=(8, 4))
         plt.plot(t_data, y_original, 'r-', linewidth=2, label='Oryginalny sygnał (Impuls)')
-        plt.plot(t_data, y_approx, 'b--', alpha=0.6, label=f'Przybliżenie (Odwrotny Fourier, $\Omega={omega}$)')
+        plt.plot(t_data, y_approx, 'b--', alpha=0.6, label=f'Przybliżenie (Odwrotny Fourier, K={K})')
 
-        plt.title("Porównanie sygnału oryginalnego z rekonstrukcją z widma")
-        plt.xlabel("Czas (t)")
-        plt.ylabel("Amplituda")
+        plt.title(title, fontsize=16)
+        plt.xlabel("Czas (t)", fontsize=14)
+        plt.ylabel("Amplituda", fontsize=14)
         plt.grid(True, alpha=0.3)
         plt.legend()
         plt.show()
@@ -146,7 +146,7 @@ class Plotter:
         sin_parts = spectrum.imag
 
         # 3. Tworzenie wykresu
-        fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(12, 8), sharex=True)
+        fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(8, 6), sharex=True)
         
         # Wykres dla cosinusów (Część rzeczywista)
         ax1.bar(omegas, cos_parts, color='royalblue', alpha=0.7, width=0.3, label='Re (Kosinusy)')
