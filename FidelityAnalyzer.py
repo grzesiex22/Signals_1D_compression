@@ -10,7 +10,7 @@ class FidelityAnalyzer:
             original_y: Oryginalne wartości sygnału (y)
             coeffs: Wszystkie współczynniki FFT (np.fft.rfft)
             threshold: Dopuszczalny błąd (np. 1.0 jednostka amplitudy lub % MSE)
-            mode: 'max' (Max Absolute Error) lub 'mse' (Mean Squared Error)
+            mode: 'max_error' (Max Absolute Error) lub 'mse' (Mean Squared Error)
             
         Returns:
             dict: {k_threshold, final_error, reconstructed_y}
@@ -36,7 +36,7 @@ class FidelityAnalyzer:
             y_hat = np.fft.irfft(test_coeffs, n=N)
             
             # Obliczanie błędu
-            if mode == 'max':
+            if mode == 'max_error':
                 current_error = np.max(np.abs(original_y - y_hat))
             else: # mse
                 current_error = np.mean(np.square(original_y - y_hat))

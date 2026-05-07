@@ -2,6 +2,7 @@ import numpy as np
 from scipy.integrate import simpson 
 import matplotlib.pyplot as plt
 
+
 class Fourier:
     def __init__(self, t_vec, y_vec):
         """
@@ -109,3 +110,75 @@ class Fourier2:
         
         res = val.real / (2 * np.pi)
         return res if len(res) > 1 else res[0]
+    
+class DiscreteFourier:
+    def __init__(self, t_vec, y_vec):
+        """
+        t_vec: wektor czasu (np. linspace)
+        y_vec: wartości sygnału (musi być tej samej długości co t_vec)
+        """
+        self.t_vec = t_vec
+        self.y_vec = y_vec
+        self.N = len(t_vec)
+        
+        # Obliczamy krok czasu (dt) i częstotliwość próbkowania (fs)
+        self.dt = t_vec[1] - t_vec[0]
+        self.fs = 1.0 / self.dt
+
+    def transform(self):
+        """
+        Oblicza Dyskretną Transformatę Fouriera (DFT).
+        Zwraca: (freq_vec, f_k_vec)
+        """
+        # Generujemy indeksy k (częstotliwości) i n (czas)
+        k = np.arange(self.N)
+        n = np.arange(self.N)
+        
+        # Macierz wykładników dla DFT: exp(-j * 2pi * k * n / N)
+        # Używamy meshgrid lub broadcasting dla szybkości
+        K, N_idx = np.meshgrid(k, n, indexing='ij')
+        W = np.exp(-2j * np.pi * K * N_idx / self.N)
+        
+        # Sumowanie (iloczyn macierzowy): F_k = suma(y_n * W_kn)
+        f_k_vec = np.dot(W, self.y_vec)
+        
+        # Obliczamy wektor częstotliwości w Hz (standardowe dla DFT)
+        freq_vec = k * (self.fs / self.N)
+        
+        return freq_vec, f_k_vec
+
+    def inverse_transform(self, f_omega_vec):
+        """
+        Odtwarza sygnał na podstawie współczynników f_k_vec (IDFT).
+        """
+        N = len(f_omega_vec)
+        k = np.arange(N)
+        n = np.arange(N)
+        
+        # Macierz wykładników dla IDFT: exp(+j * 2pi * k * n / N)
+        K, N_idx = np.meshgrid(k, n, indexing='ij')
+        W_inv = np.exp(2j * np.pi * K * N_idx / N)
+        
+        # Sumowanie i skalowanie przez 1/N
+        # n-ty element to suma po k
+        res = np.dot(W_inv.T, f_omega_vec) / N
+        
+        return res.real
+
+    @staticmethod
+    def trim_spectrum(f_omega_vec, k):
+        """
+        Zeruje wszystkie współczynniki poza K największymi.
+        """
+        magnitudes = np.abs(f_omega_vec)
+        # Znajdujemy próg dla k-tej największej wartości
+        if k >= len(f_omega_vec):
+            return f_omega_vec
+            
+        threshold_val = np.sort(magnitudes)[-k]
+        
+        f_trimmed = np.zeros_like(f_omega_vec, dtype=complex)
+        mask = magnitudes >= threshold_val
+        f_trimmed[mask] = f_omega_vec[mask]
+        
+        return f_trimmed
