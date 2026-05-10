@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd # Opcjonalnie do ładnego wyświetlania tabeli
 from FidelityAnalyzer import FidelityAnalyzer
-
+from Plotter import Plotter
 
 class FidelityTester:
     def __init__(self, dataset):
@@ -40,6 +40,7 @@ class FidelityTester:
             
             # 4. Agregacja wyników dla kategorii
             self.results[category] = {
+                "category": category,
                 "k_list": k_values,
                 "mean_k": np.mean(k_values),
                 "std_k": np.std(k_values),
@@ -47,13 +48,18 @@ class FidelityTester:
                 "max_k": np.max(k_values),
                 "count": len(k_values)
             }
-            
+
         print("Analiza zakończona.\n")
         return self.results
 
     def display_results(self):
         """Wyświetla wyniki w formie czytelnej tabeli."""
         df = pd.DataFrame(self.results).T
+        
+        for index, cat in df.iterrows():
+            Plotter.plot_k_histogram(k=cat["k_list"],
+                                        title=f"Histogram współczynników Fouriera dla sygnałów {cat['category']}")
+        
         # Usuwamy listę surowych danych K dla lepszej czytelności tabeli
         if "k_list" in df.columns:
             df = df.drop(columns=["k_list"])

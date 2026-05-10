@@ -167,3 +167,19 @@ class Plotter:
 
         plt.tight_layout()
         plt.show()
+
+    @staticmethod
+    def plot_k_histogram(k, title="Histogram współczynników Fouriera"):
+        plt.figure(figsize=(8, 4))
+        plt.hist(k, 
+                bins=20,             # Większa precyzja
+                color='royalblue',    # Ładny, nasycony niebieski
+                edgecolor='black',    # Wyraźne krawędzie słupków
+                alpha=0.7,            # Lekka przezroczystość
+                rwidth=0.85)
+        
+        plt.title(title, fontsize=16)
+        plt.xlabel("Współczynniki Fouriera", fontsize=14)
+        plt.ylabel("Ilość wykorzystanych współczynników", fontsize=14)
+        plt.grid(axis='y', linestyle='--', alpha=0.4)
+        plt.show()
