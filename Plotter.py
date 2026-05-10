@@ -172,10 +172,10 @@ class Plotter:
     def plot_k_histogram(k, title="Histogram współczynników Fouriera"):
         plt.figure(figsize=(8, 4))
         plt.hist(k, 
-                bins=20,             # Większa precyzja
-                color='royalblue',    # Ładny, nasycony niebieski
-                edgecolor='black',    # Wyraźne krawędzie słupków
-                alpha=0.7,            # Lekka przezroczystość
+                bins=20,             
+                color='royalblue',    
+                edgecolor='black',    
+                alpha=0.7,            
                 rwidth=0.85)
         
         plt.title(title, fontsize=16)

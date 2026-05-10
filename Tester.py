@@ -1,7 +1,8 @@
 import numpy as np
-import pandas as pd # Opcjonalnie do ładnego wyświetlania tabeli
+import pandas as pd 
 from FidelityAnalyzer import FidelityAnalyzer
 from Plotter import Plotter
+from Fourier import DiscreteFourier
 
 class FidelityTester:
     def __init__(self, dataset):
@@ -13,7 +14,7 @@ class FidelityTester:
         self.dataset = dataset
         self.results = {}
 
-    def run(self, threshold=2.0, mode='mse'):
+    def run(self, threshold=2.0, mode='mse', use_custom_fft=False):
         """
         Uruchamia testy dla wszystkich sygnałów w zbiorze.
         """
@@ -24,10 +25,13 @@ class FidelityTester:
             k_values = []
             
             for i, signal in enumerate(signals):
-                # 1. Transformata FFT
-                coeffs = np.fft.rfft(signal.y)
+                if use_custom_fft:
+                    fft = DiscreteFourier(signal.t, signal.y)
+                    _, coeffs = fft.transform()
+                    print(f"{category}, {i}")
+                else:
+                    coeffs = np.fft.rfft(signal.y)
                 
-                # 2. Analiza wierności (wykorzystujemy Twoją klasę FidelityAnalyzer)
                 analysis = FidelityAnalyzer.analyze_by_error(
                     original_y=signal.y, 
                     coeffs=coeffs, 
@@ -35,10 +39,8 @@ class FidelityTester:
                     mode=mode
                 )
                 
-                # 3. Zapisujemy wynik K
                 k_values.append(analysis['k_threshold'])
             
-            # 4. Agregacja wyników dla kategorii
             self.results[category] = {
                 "category": category,
                 "k_list": k_values,
@@ -60,7 +62,7 @@ class FidelityTester:
             Plotter.plot_k_histogram(k=cat["k_list"],
                                         title=f"Histogram współczynników Fouriera dla sygnałów {cat['category']}")
         
-        # Usuwamy listę surowych danych K dla lepszej czytelności tabeli
+        # Wyrzucamy współczynniki k aby ich nie drukować w terminalu
         if "k_list" in df.columns:
             df = df.drop(columns=["k_list"])
         return df
