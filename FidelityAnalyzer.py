@@ -2,7 +2,7 @@ import numpy as np
 
 class FidelityAnalyzer:
     @staticmethod
-    def analyze_by_error(original_y, coeffs, threshold=1.0, mode='max'):
+    def analyze_by_error(original_y, coeffs, threshold=1.0, mode='max_error'):
         """
         Znajduje minimalne K (liczbę współczynników), aby błąd w czasie był poniżej progu.
         
