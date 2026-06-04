@@ -7,3 +7,4 @@ ipympl
 pandas
 pydub
 ipywidgets
+pandas

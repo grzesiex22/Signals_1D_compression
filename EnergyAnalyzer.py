@@ -2,10 +2,10 @@ import numpy as np
 
 class EnergyAnalyzer:
     @staticmethod
-    def calculate_total_energy(signal_data):
+    def calculate_total_energy(signal_data_y):
         """Oblicza całkowitą energię sygnału w dziedzinie czasu."""
         # Energia sygnału dyskretnego to suma kwadratów jego wartości
-        return np.sum(np.square(signal_data.y))
+        return np.sum(np.square(signal_data_y))
 
     @staticmethod
     def analyze_energy_distribution(coeffs, N, threshold=0.95):

@@ -30,7 +30,7 @@ class FidelityTester:
                     _, coeffs = fft.transform()
                     print(f"{category}, {i}")
                 else:
-                    coeffs = np.fft.rfft(signal.y)
+                    coeffs = np.fft.fft(signal.y)
                 
                 analysis = FidelityAnalyzer.analyze_by_error(
                     original_y=signal.y, 

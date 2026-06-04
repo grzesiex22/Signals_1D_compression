@@ -130,9 +130,60 @@ class Plotter:
         plt.show()
 
     @staticmethod
+    def plot_fourier_comparison_widma(omega_values, fourier_full, fourier_trimmed, K=None, title="Porównanie Widma Transformaty Fouriera"):
+        """
+        Rysuje porównanie pełnego i przyciętego widma Fouriera w układzie dwóch kolumn.
+        
+        Args:
+            omega_values (array): Wektor częstotliwości (osi X).
+            fourier_full (array): Pełne, zespolone współczynniki widma.
+            fourier_trimmed (array): Przycięte (skompresowane) współczynniki widma.
+            title (str): Główny tytuł wykresu.
+        """
+        # Inicjalizacja figury: 3 wiersze, 2 kolumny
+        fig, axes = plt.subplots(3, 2, figsize=(13, 9), sharex=True)
+        
+        # Główny tytuł dla całej figury
+        plt.suptitle(title, fontsize=15, fontweight='bold', y=0.98)
+        
+        # Definicje konfiguracji wierszy (funkcja wyliczająca, etykieta Y, kolor)
+        rows_config = [
+            (lambda x: x.real, r"Re$\{\hat{f}(\omega)\}$", "blue", "Część rzeczywista"),
+            (lambda x: x.imag, r"Im$\{\hat{f}(\omega)\}$", "red", "Część urojona"),
+            (lambda x: np.abs(x), r"$|\hat{f}(\omega)|$", "green", "Moduł widma")
+        ]
+        
+        for idx, (func, ylabel, color, row_title) in enumerate(rows_config):
+            # --- LEWA KOLUMNA: PEŁNE WIDMO ---
+            ax_left = axes[idx, 0]
+            ax_left.plot(omega_values, func(fourier_full), color=color, linewidth=1.1)
+            ax_left.set_ylabel(ylabel, fontsize=11)
+            ax_left.grid(True, alpha=0.4)
+            if idx == 0:
+                ax_left.set_title("Widmo Pełne (Przed kompresją)", fontsize=12, fontweight='bold', pad=10)
+            
+            # --- PRAWA KOLUMNA: PRZYCIĘTE WIDMO ---
+            ax_right = axes[idx, 1]
+            ax_right.plot(omega_values, func(fourier_trimmed), color=color, linewidth=1.1)
+            ax_right.grid(True, alpha=0.4)
+            if idx == 0:
+                ax_right.set_title("Widmo Przycięte (Po kompresji) - K={}".format(K), fontsize=12, fontweight='bold', pad=10)
+                
+            # Dodatkowy opis wiersza po prawej stronie wykresu dla czytelności sekcji
+            ax_right.text(1.02, 0.5, row_title, transform=ax_right.transAxes, 
+                         rotation=-90, va='center', ha='left', fontsize=11, fontweight='bold')
+
+        # Wspólny podpis osi czasu dla dolnych wykresów
+        axes[-1, 0].set_xlabel(r"$\omega$ [Hz]", fontsize=11)
+        axes[-1, 1].set_xlabel(r"$\omega$ [Hz]", fontsize=11)
+        
+        plt.tight_layout()
+        plt.show()
+
+    @staticmethod
     def plot_fourier_comparison(t_data, y_original, y_approx, K, title="Porównanie sygnału oryginalnego z rekonstrukcją z widma"):
         plt.figure(figsize=(8, 4))
-        plt.plot(t_data, y_original, 'r-', linewidth=2, label='Oryginalny sygnał (Impuls)')
+        plt.plot(t_data, y_original, 'r-', linewidth=2, label='Oryginalny sygnał')
         plt.plot(t_data, y_approx, 'b--', alpha=0.6, label=f'Przybliżenie (Odwrotny Fourier, K={K})')
 
         plt.title(title, fontsize=16)

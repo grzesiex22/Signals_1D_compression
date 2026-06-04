@@ -33,7 +33,7 @@ class FidelityAnalyzer:
             test_coeffs[active_indices] = coeffs[active_indices]
             
             # Powrót do dziedziny czasu
-            y_hat = np.fft.irfft(test_coeffs, n=N)
+            y_hat = np.fft.ifft(test_coeffs, n=N)
             
             # Obliczanie błędu
             if mode == 'max_error':
