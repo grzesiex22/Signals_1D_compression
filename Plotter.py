@@ -38,14 +38,17 @@ class Plotter:
         plt.show()
 
     @staticmethod
-    def plot_indices(signals, category_name, indices=[0]):
+    def plot_indices(signals, category_name, indices=[0], signals_noisy=None, noise_level=0.0):
         """
-        Rysuje sygnały o konkretnych indeksach z danej kategorii.
+        Rysuje sygnały o konkretnych indeksach z danej kategorii. 
+        Opcjonalnie nakłada na nie zaszumione odpowiedniki.
         
         Args:
-            signals (list): Lista obiektów SignalData.
+            signals (list): Lista obiektów SignalData (czyste sygnały).
             category_name (str): Nazwa kategorii (do tytułu i koloru).
-            indices (list): Lista indeksów, np. [0, 10, 99].
+            indices (list): Lista indeksów do narysowania, np. [0, 2, 5].
+            signals_noisy (list, optional): Lista obiektów SignalData (zaszumione sygnały).
+            noise_level (float, optional): Poziom szumu, używany do opisu w legendzie.
         """
         # Sprawdzamy, czy indeksy mieszczą się w liście
         valid_indices = [i for i in indices if i < len(signals)]
@@ -55,24 +58,37 @@ class Plotter:
             print("Błąd: Podane indeksy są poza zakresem danych.")
             return
 
-        fig, axes = plt.subplots(num_plots, 1, figsize=(8, 2 * num_plots), sharex=True)
+        fig, axes = plt.subplots(num_plots, 1, figsize=(10, 2.5 * num_plots), sharex=True)
         
-        # Jeśli rysujemy tylko jeden sygnał, matplotlib nie zwraca listy osi
+        # Jeśli rysujemy tylko jeden sygnał, matplotlib zwraca pojedynczą oś zamiast tablicy
         if num_plots == 1:
             axes = [axes]
 
-        # Konfiguracja wizualna
-        colors = {'aprbs': '#e74c3c', 'multisine': '#3498db', 'noise': '#27ae60'}
+        # Konfiguracja kolorystyczna
+        colors = {'aprbs': "#ca2c1a", 'multisine': "#125684", 'noise': "#118329"}
         color = colors.get(category_name.lower(), 'black')
 
         for i, idx in enumerate(valid_indices):
-            sig = signals[idx]
-            axes[i].plot(sig.t, sig.y, color=color, linewidth=1.2)
-            axes[i].set_ylabel(f"Indeks: {idx}\nY")
+            # 1. Rysowanie sygnału zaszumionego (w tle), jeśli został przekazany
+            if signals_noisy is not None and idx < len(signals_noisy):
+                sig_noisy = signals_noisy[idx]
+                axes[i].plot(sig_noisy.t, sig_noisy.y, color=color, alpha=0.6, 
+                             linewidth=1.0, label=f'Sygnał zaszumiony ({noise_level})' if i == 0 else "")
+            
+            # 2. Rysowanie sygnału czystego (na wierzchu)
+            sig_clean = signals[idx]
+            axes[i].plot(sig_clean.t, sig_clean.y, color=color, alpha=1.0, 
+                         linewidth=1.3, label='Sygnał czysty' if i == 0 else "")
+            
+            # Dodatki do wykresu
+            axes[i].set_ylabel(f"Indeks: {idx}\nU [V]")
             axes[i].grid(True, alpha=0.3)
             
             if i == 0:
-                axes[i].set_title(f"Analiza wybranych próbek: {category_name.upper()}")
+                axes[i].set_title(f"Analiza porównawcza widma czasowego: {category_name.upper()}")
+                # Dodanie legendy tylko do pierwszego wykresu, żeby nie śmiecić
+                if signals_noisy is not None:
+                    axes[i].legend(loc="upper right")
 
         axes[-1].set_xlabel("Czas [s]")
         plt.tight_layout()

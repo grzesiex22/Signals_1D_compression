@@ -6,3 +6,4 @@ tqdm
 ipympl
 pandas
 pydub
+ipywidgets
