@@ -70,7 +70,8 @@ class DatasetCreator:
         if n <= 0:
             return trajectories
 
-        for _ in tqdm(range(n), desc=f"Generowanie {signal_type.upper()}"):
+        desc_text = f"Generowanie {signal_type.upper()}"
+        for _ in tqdm(range(n), desc=f"{desc_text:<25}"): 
             # Pobranie czystych wartości sygnału
             u_values = self._get_signal_values(signal_type)
 
