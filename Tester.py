@@ -25,7 +25,7 @@ class TesterUtils:
             return
 
         # Dalsza część funkcji pozostaje bez zmian...
-        output_dir = f"Results/{folder}"
+        output_dir = f"Results\\{folder}"
         os.makedirs(output_dir, exist_ok=True)
         full_path = os.path.join(output_dir, filename)
         
@@ -72,7 +72,7 @@ class TesterUtils:
             print("[INFO] Brak danych do wyrenderowania tabeli.")
             return
 
-        output_dir = f"Results/{folder}"
+        output_dir = f"Results\\{folder}"
         os.makedirs(output_dir, exist_ok=True)
 
         # Dynamiczne wykrywanie strategii na podstawie zawartości ramki danych
@@ -131,87 +131,70 @@ class TesterUtils:
         #     print(f"[ZAPIS MD] Tabelę Markdown zapisano w: {md_filename}")
 
         # =========================================================================
-        # NOWE, PREMIUM GENEROWANIE TABELI HTML (EFEKT "ŁADNYCH" RAPORTÓW)
+        # BEZPIECZNE GENEROWANIE TABELI INLINE HTML (STYL PASTELOWY BABY BLUE)
         # =========================================================================
         if save_md:
             if not save_name_suffix:
                 save_name_suffix = f"default_name_table_{file_label}_{category_name.lower()}"
             
-            formatted_df = pd.DataFrame(rows, columns=headers)
+            # Nowe style: Wyraźniejsza, ciemniejsza czcionka o wysokim kontraście
+            th_style = "style='background-color: #e0f2fe; color: #0369a1; padding: 12px 14px; text-align: left; font-weight: 700; font-family: -apple-system, BlinkMacSystemFont, \"Segoe UI\", Helvetica, Arial, sans-serif; font-size: 13px; border-bottom: 2px solid #bae6fd;'"
+            td_base  = "padding: 11px 14px; border-bottom: 1px solid #e2e8f0; color: #1e293b; font-family: -apple-system, BlinkMacSystemFont, \"Segoe UI\", Helvetica, Arial, sans-serif; font-size: 13px;"
             
-            # Nowoczesny, czysty i bardzo estetyczny styl CSS
-            html_style = """<style>
-                .premium-table-container {
-                    margin: 20px 0;
-                    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-                    border-radius: 8px;
-                    overflow: hidden;
-                    border: 1px solid #e2e8f0;
-                }
-                .premium-table {
-                    border-collapse: collapse;
-                    width: 100%;
-                    font-family: 'Inter', 'Segoe UI', Helvetica, Arial, sans-serif;
-                    font-size: 13px;
-                    background-color: #ffffff;
-                }
-                .premium-table th {
-                    background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
-                    color: #ffffff;
-                    padding: 14px 16px;
-                    text-align: left;
-                    font-weight: 600;
-                    text-transform: uppercase;
-                    font-size: 11px;
-                    letter-spacing: 0.05em;
-                    border: none;
-                }
-                .premium-table td {
-                    padding: 12px 16px;
-                    border-bottom: 1px solid #f1f5f9;
-                    color: #334155;
-                }
-                /* Efekt zebry - naprzemienne wiersze */
-                .premium-table tr:nth-child(even) {
-                    background-color: #f8fafc;
-                }
-                /* Efekt podświetlenia wiersza po najechaniu */
-                .premium-table tr:hover {
-                    background-color: #f1f5f9;
-                    transition: background-color 0.2s ease;
-                }
-                /* Wyróżnienie pierwszej kolumny (Strategia) */
-                .premium-table td:nth-child(1) {
-                    font-weight: 500;
-                    color: #1e293b;
-                }
-                /* Wyróżnienie drugiej kolumny (Konfiguracja) i nadanie jej koloru akcentu */
-                .premium-table td:nth-child(2) {
-                    font-weight: 600;
-                    color: #2563eb;
-                }
-                /* Wyróżnienie kolumny ze Średnim K (kolumna 4) */
-                .premium-table td:nth-child(4) {
-                    font-weight: 700;
-                    color: #0f172a;
-                    background-color: rgba(37, 99, 235, 0.03);
-                }
-            </style>
-            """
+            # Budujemy strukturę tabeli
+            html_rows = []
+            html_rows.append("<table style='border-collapse: collapse; width: 100%; border: 1px solid #cbd5e1; border-radius: 6px; overflow: hidden;'>")
+            html_rows.append("  <thead>")
+            html_rows.append("    <tr>")
+            for h in headers:
+                html_rows.append(f"      <th {th_style}>{h}</th>")
+            html_rows.append("    </tr>")
+            html_rows.append("  </thead>")
+            html_rows.append("  <tbody>")
             
-            # Generujemy tabelę owiniętą w nasz stylizowany kontener div
-            html_table = formatted_df.to_html(index=False, classes='premium-table', border=0)
-            wrapped_table = f'<div class="premium-table-container">\n{html_table}\n</div>'
+            # Wiersze danych
+            for idx, row in enumerate(rows):
+                bg_color = "#f8fafc" if idx % 2 == 0 else "#ffffff"
+                
+                html_rows.append(f"    <tr style='background-color: {bg_color};'>")
+                for col_idx, val in enumerate(row):
+                    
+                    # Kolumna 1 (Strategia): Wyraźny, głęboki kolor
+                    if col_idx == 0:
+                        custom_style = f"{td_base} font-weight: 600; color: #0f172a;"
+                    
+                    # Kolumna 2: Konfiguracja (Mocniejszy, techniczny monospace)
+                    elif col_idx == 1:
+                        custom_style = f"{td_base} font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace; font-size: 12px; color: #334155; font-weight: 600;"
+                    
+                    # Kolumna 3: Liczba sygnałów (Stonowany szary, ale czytelny)
+                    elif col_idx == 2:
+                        custom_style = f"{td_base} color: #64748b; font-weight: 500;"
+                        
+                    # Kolumna 4: Średnie K (Nadal w miętowym pastelu dla świetnego kontrastu z niebieskim nagłówkiem)
+                    elif col_idx == 3:
+                        custom_style = f"{td_base} font-weight: 700; color: #0f172a; background-color: #e6f4ea;"
+                        
+                    # Pozostałe kolumny z metrykami
+                    else:
+                        custom_style = td_base
+                        
+                    html_rows.append(f"      <td style='{custom_style}'>{val}</td>")
+                html_rows.append("    </tr>")
+                
+            html_rows.append("  </tbody>")
+            html_rows.append("</table>")
             
+            complete_html_table = "\n".join(html_rows)
+            
+            # Zapis do pliku z poprawionymi uniwersalnymi ukośnikami ścieżki
             md_filename = os.path.join(output_dir, f"{save_name_suffix}.md")
             with open(md_filename, "w", encoding="utf-8") as f:
-                f.write(f"### {title}\n\n")
-                f.write(html_style + "\n" + wrapped_table)
+                f.write(f"##### {title}\n\n")
+                f.write(complete_html_table)
                 
-            print(f"[ZAPIS PREMIUM HTML] Przepiękną tabelę raportową zapisano w: {md_filename}")
+            print(f"[ZAPIS MODERN HTML] Tabelę zapisano w: {md_filename}")
 
-
-        # Wyświetlenie w notebooku
         ReportTableRenderer.render(title, headers, rows)
 
 class EnergyTester:
@@ -238,7 +221,7 @@ class EnergyTester:
 
         signals = self.dataset[category_name]
         results = []
-        energy_thresholds = [0.90, 0.95, 0.99]
+        energy_thresholds = [0.99, 0.999, 0.9999]
 
         desc_text = f"Kryterium Energetyczne: {category_name.upper()}"
         
@@ -255,7 +238,7 @@ class EnergyTester:
                 coeffs = np.fft.fft(signal.y)
 
             for eth in energy_thresholds:
-                energy_res = EnergyAnalyzer.analyze_energy_distribution(coeffs, eth)
+                energy_res = EnergyAnalyzer.analyze_energy_distribution(coeffs, N=len(signal.y), threshold=eth)
                 
                 # Bezpieczne wyciąganie progu K (obsługa słownika lub surowej liczby)
                 if isinstance(energy_res, dict):
@@ -269,10 +252,9 @@ class EnergyTester:
                     y_rec = DiscreteFourier.inverse_transform(f_trimmed)
                 else:
                     magnitudes = np.abs(coeffs)
-                    threshold_val = np.sort(magnitudes)[-energy_res['k_threshold']]
+                    threshold_val = np.sort(magnitudes)[-k_energy] if k_energy < len(magnitudes) else 0
                     f_trimmed = np.where(magnitudes >= threshold_val, coeffs, 0)
-
-                    y_rec = np.fft.ifft(f_trimmed, n=len(signal.y))
+                    y_rec = np.fft.ifft(f_trimmed, n=len(signal.y)).real
                 
                 # Ewaluacja metryk jakości
                 metrics = SignalMetrics.evaluate_reconstruction(signal.y, y_rec)
