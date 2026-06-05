@@ -160,18 +160,18 @@ class Plotter:
             ax_left.set_ylabel(ylabel, fontsize=11)
             ax_left.grid(True, alpha=0.4)
             if idx == 0:
-                ax_left.set_title("Widmo Pełne (Przed kompresją)", fontsize=12, fontweight='bold', pad=10)
+                ax_left.set_title("Widmo Pełne (Przed kompresją)", fontsize=13, fontweight='bold', pad=10)
             
             # --- PRAWA KOLUMNA: PRZYCIĘTE WIDMO ---
             ax_right = axes[idx, 1]
             ax_right.plot(omega_values, func(fourier_trimmed), color=color, linewidth=1.1)
             ax_right.grid(True, alpha=0.4)
             if idx == 0:
-                ax_right.set_title("Widmo Przycięte (Po kompresji) - K={}".format(K), fontsize=12, fontweight='bold', pad=10)
+                ax_right.set_title("Widmo Przycięte (Po kompresji) - K={}".format(K), fontsize=13, fontweight='bold', pad=10)
                 
             # Dodatkowy opis wiersza po prawej stronie wykresu dla czytelności sekcji
             ax_right.text(1.02, 0.5, row_title, transform=ax_right.transAxes, 
-                         rotation=-90, va='center', ha='left', fontsize=11, fontweight='bold')
+                         rotation=-90, va='center', ha='left', fontsize=11)
 
         # Wspólny podpis osi czasu dla dolnych wykresów
         axes[-1, 0].set_xlabel(r"$\omega$ [Hz]", fontsize=11)
@@ -186,9 +186,9 @@ class Plotter:
         plt.plot(t_data, y_original, 'r-', linewidth=2, label='Oryginalny sygnał')
         plt.plot(t_data, y_approx, 'b--', alpha=0.6, label=f'Przybliżenie (Odwrotny Fourier, K={K})')
 
-        plt.title(title, fontsize=16)
-        plt.xlabel("Czas (t)", fontsize=14)
-        plt.ylabel("Amplituda", fontsize=14)
+        plt.title(title, fontsize=13, fontweight='bold', pad=10)
+        plt.xlabel("Czas (t)", fontsize=11)
+        plt.ylabel("Amplituda", fontsize=11)
         plt.grid(True, alpha=0.3)
         plt.legend()
         plt.show()
