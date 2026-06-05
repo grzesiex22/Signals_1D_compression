@@ -112,42 +112,42 @@ class Fourier2:
         return res if len(res) > 1 else res[0]
     
 class DiscreteFourier:
-    def __init__(self, t_vec, y_vec):
+    @staticmethod
+    def transform(t_vec, y_vec):
         """
-        t_vec: wektor czasu (np. linspace)
-        y_vec: wartości sygnału (musi być tej samej długości co t_vec)
-        """
-        self.t_vec = t_vec
-        self.y_vec = y_vec
-        self.N = len(t_vec)
+        Oblicza Dyskretną Transformatę Fouriera (DFT) jako funkcja statyczna.
         
-        # Obliczamy krok czasu (dt) i częstotliwość próbkowania (fs)
-        self.dt = t_vec[1] - t_vec[0]
-        self.fs = 1.0 / self.dt
-
-    def transform(self):
+        Args:
+            t_vec (np.ndarray): Wektor czasu (np. linspace).
+            y_vec (np.ndarray): Wartości sygnału (tej samej długości co t_vec).
+            
+        Returns:
+            tuple: (freq_vec, f_k_vec) - wektor częstotliwości w Hz oraz zespolone widmo.
         """
-        Oblicza Dyskretną Transformatę Fouriera (DFT).
-        Zwraca: (freq_vec, f_k_vec)
-        """
+        N = len(t_vec)
+        
+        # Obliczamy krok czasu (dt) i częstotliwość próbkowania (fs) lokalnie
+        dt = t_vec[1] - t_vec[0]
+        fs = 1.0 / dt
+        
         # Generujemy indeksy k (częstotliwości) i n (czas)
-        k = np.arange(self.N)
-        n = np.arange(self.N)
+        k = np.arange(N)
+        n = np.arange(N)
         
         # Macierz wykładników dla DFT: exp(-j * 2pi * k * n / N)
-        # Używamy meshgrid lub broadcasting dla szybkości
         K, N_idx = np.meshgrid(k, n, indexing='ij')
-        W = np.exp(-2j * np.pi * K * N_idx / self.N)
+        W = np.exp(-2j * np.pi * K * N_idx / N)
         
         # Sumowanie (iloczyn macierzowy): F_k = suma(y_n * W_kn)
-        f_k_vec = np.dot(W, self.y_vec)
+        f_k_vec = np.dot(W, y_vec)
         
-        # Obliczamy wektor częstotliwości w Hz (standardowe dla DFT)
-        freq_vec = k * (self.fs / self.N)
+        # Obliczamy wektor częstotliwości w Hz
+        freq_vec = k * (fs / N)
         
         return freq_vec, f_k_vec
-
-    def inverse_transform(self, f_omega_vec):
+    
+    @staticmethod
+    def inverse_transform(f_omega_vec):
         """
         Odtwarza sygnał na podstawie współczynników f_k_vec (IDFT).
         """

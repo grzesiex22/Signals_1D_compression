@@ -1,8 +1,9 @@
 import numpy as np
+from Fourier import DiscreteFourier
 
 class FidelityAnalyzer:
     @staticmethod
-    def analyze_by_error(original_y, coeffs, threshold=1.0, mode='max_error'):
+    def analyze_by_error(original_y, coeffs, threshold=1.0, mode='max_error', use_numpy=True):
         """
         Znajduje minimalne K (liczbę współczynników), aby błąd w czasie był poniżej progu.
         
@@ -33,6 +34,10 @@ class FidelityAnalyzer:
             test_coeffs[active_indices] = coeffs[active_indices]
             
             # Powrót do dziedziny czasu
+            if use_numpy:
+                y_hat = np.fft.ifft(test_coeffs, n=N)
+            else:
+                DiscreteFourier
             y_hat = np.fft.ifft(test_coeffs, n=N)
             
             # Obliczanie błędu
