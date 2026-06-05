@@ -1,60 +1,3 @@
-# import pandas as pd
-# from IPython.display import display
-
-# class ReportTableRenderer:
-#     @staticmethod
-#     def render(title, headers, rows):
-#         """
-#         Generuje i wyświetla elegancką, nowoczesną tabelę HTML w Jupyter Notebooku.
-        
-#         Args:
-#             title (str): Tytuł wyświetlany bezpośrednio nad tabelą jako podpis.
-#             headers (list): Lista zawierająca nazwy nagłówków kolumn.
-#             rows (list of lists): Lista wierszy, gdzie każdy wiersz to lista wartości.
-#         """
-#         # 1. Konwersja danych do formatu słownika dla Pandas
-#         data_dict = {headers[i]: [row[i] for row in rows] for i in range(len(headers))}
-        
-#         # 2. Tworzenie obiektu DataFrame
-#         df = pd.DataFrame(data_dict)
-        
-#         # 3. Definicja i aplikacja nowoczesnego stylu CSS wraz z tytułem (caption)
-#         styled_df = df.style.set_caption(title).set_table_styles([
-#             # Styl dla tytułu nad tabelą (pogrubiony, wyśrodkowany, z odstępem)
-#             {'selector': 'caption', 'props': [
-#                 ('caption-side', 'top'),
-#                 ('font-family', 'Segoe UI, sans-serif'),
-#                 ('font-size', '15px'),
-#                 ('font-weight', 'bold'),
-#                 ('color', "#95b3e5"),
-#                 ('text-align', 'center'),
-#                 ('padding-bottom', '10px')
-#             ]},
-#             # Styl nagłówka (ciemny grafit, elegancki font)
-#             {'selector': 'th', 'props': [
-#                 ('background-color', '#2d3748'), 
-#                 ('color', 'white'), 
-#                 ('font-family', 'Segoe UI, sans-serif'),
-#                 ('padding', '12px 16px'),
-#                 ('font-weight', '600'),
-#                 ('text-align', 'center')
-#             ]},
-#             # Styl komórek z danymi
-#             {'selector': 'td', 'props': [
-#                 ('padding', '10px 16px'),
-#                 ('font-family', 'Segoe UI, sans-serif'),
-#                 ('border-bottom', '1px solid #e2e8f0'),
-#                 ('background-color', '#f8fafc')
-#             ]},
-#             # Wyrównanie: tekst do lewej, liczby do prawej
-#             {'selector': 'td.col0', 'props': [('text-align', 'left'), ('color', '#1a202c')]},
-#             {'selector': 'td.col1', 'props': [('text-align', 'right'), ('color', '#1d4ed8'), ('font-weight', 'bold')]}
-#         ]).hide(axis='index')  # Ukrywamy indeksy wierszy
-        
-#         # 4. Wyświetlenie ostylowanej tabeli
-#         display(styled_df)
-
-
 import pandas as pd
 from IPython.display import display, HTML
 
@@ -64,11 +7,6 @@ class ReportTableRenderer:
         """
         Generuje i wyświetla elegancką, nowoczesną tabelę HTML w Jupyter Notebooku,
         w pełni kompatybilną z parserem Markdown serwisu GitHub.
-        
-        Args:
-            title (str): Tytuł wyświetlany bezpośrednio nad tabelą jako podpis.
-            headers (list): Lista zawierająca nazwy nagłówków kolumn.
-            rows (list of lists): Lista wierszy, gdzie każdy wiersz to lista wartości.
         """
         # 1. Konwersja danych do formatu słownika dla Pandas
         data_dict = {headers[i]: [row[i] for row in rows] for i in range(len(headers))}
@@ -76,8 +14,14 @@ class ReportTableRenderer:
         # 2. Tworzenie obiektu DataFrame
         df = pd.DataFrame(data_dict)
         
-        # 3. Definicja i aplikacja nowoczesnego stylu CSS (bez problematycznego set_caption)
-        styled_df = df.style.set_table_styles([
+        # 3. Dynamiczne generowanie stylów dla kolumn numerycznych (od indeksu 1 do końca)
+        # Zapewnia to poprawne wyrównanie do prawej dla wszystkich metryk (K, MSE, PRD itd.)
+        numeric_column_styles = [
+            {'selector': f'td.col{i}', 'props': [('text-align', 'right'), ('color', '#1d4ed8'), ('font-weight', 'bold')]}
+            for i in range(1, len(headers))
+        ]
+        
+        base_styles = [
             # Styl nagłówka (ciemny grafit, elegancki font)
             {'selector': 'th', 'props': [
                 ('background-color', '#2d3748'), 
@@ -94,12 +38,14 @@ class ReportTableRenderer:
                 ('border-bottom', '1px solid #e2e8f0'),
                 ('background-color', '#f8fafc')
             ]},
-            # Wyrównanie: tekst do lewej, liczby do prawej
-            {'selector': 'td.col0', 'props': [('text-align', 'left'), ('color', '#1a202c')]},
-            {'selector': 'td.col1', 'props': [('text-align', 'right'), ('color', '#1d4ed8'), ('font-weight', 'bold')]}
-        ]).hide(axis='index')  # Ukrywamy indeksy wierszy
+            # Pierwsza kolumna (tekstowa - "Strategia") do lewej
+            {'selector': 'td.col0', 'props': [('text-align', 'left'), ('color', '#1a202c')]}
+        ]
         
-        # 4. Bezpieczne i stabilne wygenerowanie nagłówka kompatybilnego z GitHubem
+        # Łączymy bazowe style z dynamicznym wyrównaniem liczb
+        styled_df = df.style.set_table_styles(base_styles + numeric_column_styles).hide(axis='index')
+        
+        # 4. Wygenerowanie wyśrodkowanego nagłówka
         title_html = f"""
         <div style="font-family: 'Segoe UI', sans-serif; 
                     font-size: 15px; 
@@ -112,6 +58,6 @@ class ReportTableRenderer:
         </div>
         """
         
-        # 5. Łączenie tytułu z wyrenderowanym HTML-em tabeli i wyświetlenie całości
+        # 5. Łączenie i bezpieczny render
         full_html = title_html + styled_df.to_html()
         display(HTML(full_html))

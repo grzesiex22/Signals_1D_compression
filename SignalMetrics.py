@@ -61,5 +61,5 @@ class SignalMetrics:
             "MSE": SignalMetrics.mse(y_true, y_pred),
             "RMSE": SignalMetrics.rmse(y_true, y_pred),
             "MAX ERROR": SignalMetrics.max_error(y_true, y_pred),
-            "Wskaźnik zniekształcenia PRD": f"{SignalMetrics.prd(y_true, y_pred):.2f}%"
+            "Wskaźnik zniekształcenia PRD": SignalMetrics.prd(y_true, y_pred)
         }
