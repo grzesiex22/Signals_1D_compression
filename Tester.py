@@ -26,8 +26,7 @@ class FidelityTester:
             
             for i, signal in enumerate(signals):
                 if use_custom_fft:
-                    fft = DiscreteFourier(signal.t, signal.y)
-                    _, coeffs = fft.transform()
+                    _, coeffs = DiscreteFourier.transform(signal.t, signal.y)
                     print(f"{category}, {i}")
                 else:
                     coeffs = np.fft.fft(signal.y)
@@ -36,7 +35,8 @@ class FidelityTester:
                     original_y=signal.y, 
                     coeffs=coeffs, 
                     threshold=threshold, 
-                    mode=mode
+                    mode=mode,
+                    use_numpy=not use_custom_fft
                 )
                 
                 k_values.append(analysis['k_threshold'])
